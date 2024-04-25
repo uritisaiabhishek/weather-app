@@ -1,6 +1,10 @@
-import './App.css';
+import './App.scss';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import Header from './Header';
+import Sidebar from './Sidebar';
+import Forecast from './Forecast';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 function App() {
   const [weatherdata, setWeather] = useState(null); // State to store weather data
@@ -27,64 +31,15 @@ function App() {
 
   return (
     <div className="App">
-      <header> 
-        <h1>Weather app</h1>
-      </header>
-      <div className='city_search'>
-        <input
-          name="cityname"
-          value={cityname}
-          onChange={(e) => setCityname(e.target.value)}
-        />
-        <button onClick={searchWeather}>Search</button>
-      </div>
-
-      {
-        !loading ? 
-        <div className='weather_container'>Loading...</div>:
-        <div className='weather_container'>
-            {weatherdata && (
-              <>
-              <h2>Current Weather in - {weatherdata.name}</h2>
-              {weatherdata.sys && (
-                <p>Country: {weatherdata.sys.country}</p>
-              )}
-              {weatherdata.sys && weatherdata.sys.sunrise && (
-                <p>Sunrise: {new Date(weatherdata.sys.sunrise * 1000).toLocaleTimeString()}</p>
-              )}
-              {weatherdata.sys && weatherdata.sys.sunset && (
-                <p>Sunset: {new Date(weatherdata.sys.sunset * 1000).toLocaleTimeString()}</p>
-              )}
-              {weatherdata.weather && weatherdata.weather[0] && (
-                <>
-                  <p>Weather: {weatherdata.weather[0].description}</p>
-                  <img
-                    src={`https://openweathermap.org/img/wn/${weatherdata.weather[0].icon}.png`}
-                    alt="Weather icon"
-                  />
-                </>
-              )}
-              {weatherdata.main && (
-                <>
-                  <p>Temperature: {weatherdata.main.temp}</p>
-                  <p>Temperature Maximum: {weatherdata.main.temp_max}</p>
-                  <p>Temperature Minimum: {weatherdata.main.temp_min}</p>
-                  {weatherdata.main.sea_level && <p>Sea Level: {weatherdata.main.sea_level}</p>}
-                  <p>Pressure: {weatherdata.main.pressure}</p>
-                  <p>Humidity: {weatherdata.main.humidity}</p>
-                </>
-              )}
-              {weatherdata.wind && (
-                <>
-                  <p>Wind Speed: {weatherdata.wind.speed}</p>
-                  <p>Wind Degree: {weatherdata.wind.deg}</p>
-                  {weatherdata.wind.gust && <p>Wind Gust: {weatherdata.wind.gust}</p>}
-                </>
-              )}
-              </>
-            )}
-        </div>
-      }
+      <BrowserRouter>
+        <Sidebar />
+        <Header cityname={cityname} setCityname={setCityname} searchWeather={searchWeather} />
+        
+        <Routes>
+          <Route path='/weather-app' element={<Forecast loading={loading} weatherdata={weatherdata} />} />
+        </Routes>
+        
+      </BrowserRouter>
     </div>
   );
 }
